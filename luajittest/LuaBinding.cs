@@ -21,7 +21,7 @@ public static partial class LuaBinding
     public const int LUA_ERRSYNTAX = 3;
     public const int LUA_ERRMEM = 4;
     public const int LUA_ERRERR = 5;
-    
+
     public delegate int lua_CFunction(IntPtr luaState);
     
     [LibraryImport(LibName)]
@@ -39,7 +39,12 @@ public static partial class LuaBinding
     public static void lua_pushcfunction(IntPtr luaState, lua_CFunction f) => lua_pushcclosure(luaState, f, 0);
 
     [LibraryImport(LibName, StringMarshalling = StringMarshalling.Utf8)]
+    public static partial void lua_getfield(IntPtr luaState, int index, string k);
+    
+    [LibraryImport(LibName, StringMarshalling = StringMarshalling.Utf8)]
     public static partial void lua_setfield(IntPtr luaState, int index, string k);
+
+    public static void lua_getglobal(IntPtr luaState, string name) => lua_getfield(luaState, LUA_GLOBALSINDEX, name);
     
     public static void lua_setglobal(IntPtr luaState, string name) => lua_setfield(luaState, LUA_GLOBALSINDEX, name);
 
@@ -55,4 +60,23 @@ public static partial class LuaBinding
         if (result != LUA_OK) return result;
         return lua_pcall(luaState, 0, 0, 0);
     }
+
+    [LibraryImport(LibName, StringMarshalling = StringMarshalling.Utf8)]
+    public static partial string lua_tolstring(IntPtr luaState, int index, IntPtr len);
+
+    public static string lua_tostring(IntPtr luaState, int index) => lua_tolstring(luaState, index, IntPtr.Zero);
+
+    [LibraryImport(LibName)]
+    public static partial void lua_pop(IntPtr luaState, int n);
+
+    [LibraryImport(LibName)]
+    public static partial void lua_createtable(IntPtr luaState, int narr, int nrec);
+
+    public static void lua_newtable(IntPtr luaState) => lua_createtable(luaState, 0, 0);
+
+    [LibraryImport(LibName, StringMarshalling = StringMarshalling.Utf8)]
+    public static partial void lua_pushstring(IntPtr luaState, string s);
+
+    [LibraryImport(LibName)]
+    public static partial void lua_settable(IntPtr luaState, int idx);
 }

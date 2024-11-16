@@ -2,22 +2,14 @@
 // Copyright (c) 2024 opticfluorine
 // Licensed under the MIT License - see LICENSE file for details
 
-using static luajittest.LuaBinding;
+using luajittest;
 
-int HelloWorld(IntPtr luaState)
+var host = new LuaHost(new HelloService(42));
+try
 {
-    Console.Out.WriteLine("Hello World!");
-    return 0;
+    host.RunString("cs_host.hello_world()");
 }
-
-var luaState = luaL_newstate();
-luaL_openlibs(luaState);
-
-lua_pushcfunction(luaState, HelloWorld);
-lua_setglobal(luaState, "hello_world");
-
-luaL_dostring(luaState, "hello_world()");
-
-lua_close(luaState);
-
-Console.Out.WriteLine("Complete.");
+catch (LuaException e)
+{
+    Console.Error.WriteLine($"Lua error: {e.Message}");
+}
